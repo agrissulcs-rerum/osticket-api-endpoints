@@ -14,7 +14,17 @@ controllers/SubticketApiController.php
 
 # Libraries
 lib/
+lib/ApiBootstrap.php
 lib/XmlHelper.php
+lib/Enums/
+lib/Enums/MessageFormat.php
+lib/Enums/Permission.php
+lib/Enums/SortField.php
+lib/Services/
+lib/Services/AttachmentService.php
+lib/Services/PermissionChecker.php
+lib/Services/TicketService.php
+lib/Services/TicketValidatorService.php
 
 # Assets
 assets/
@@ -28,6 +38,7 @@ api/tickets-update.php
 api/tickets-delete.php
 api/tickets-stats.php
 api/tickets-statuses.php
+api/tickets-attachment-download.php
 
 # API files (subticket endpoints)
 api/tickets-subtickets-create.php
