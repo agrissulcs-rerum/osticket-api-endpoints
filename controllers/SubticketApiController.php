@@ -39,9 +39,18 @@ class SubticketApiController extends ExtendedTicketApiController {
     /**
      * Get API key - use test key if set, otherwise call requireApiKey()
      *
+     * NOTE: deliberately NOT named getApiKey() - that name collides with
+     * ApiController::getApiKey() in osTicket core (include/class.api.php),
+     * which core's own getKey()/requireApiKey() call internally and expect
+     * to return the raw X-API-Key header string. Because PHP dispatches to
+     * the most-derived override, naming this method getApiKey() caused core's
+     * getKey() to invoke this method instead, which calls requireApiKey(),
+     * which calls getKey() again - infinite recursion until memory exhausted
+     * (HTTP 500 on every subticket endpoint call).
+     *
      * @return API|null API key object
      */
-    protected function getApiKey() {
+    protected function getResolvedApiKey() {
         if ($this->testApiKey !== null) {
             return $this->testApiKey;
         }
@@ -55,7 +64,7 @@ class SubticketApiController extends ExtendedTicketApiController {
      */
     public function hasSubticketPermission(): bool {
         // Get API key
-        $key = $this->getApiKey();
+        $key = $this->getResolvedApiKey();
 
         if (!$key) {
             return false;
@@ -104,7 +113,7 @@ class SubticketApiController extends ExtendedTicketApiController {
      * @return bool True if access granted, false otherwise
      */
     private function canAccessTicket(Ticket $ticket): bool {
-        $apiKey = $this->getApiKey();
+        $apiKey = $this->getResolvedApiKey();
 
         // If no API key, deny access
         if (!$apiKey) {
