@@ -195,7 +195,13 @@ class ExtendedTicketApiController extends TicketApiController {
      * due to osTicket's internal rules (e.g., Topic overriding departmentId)
      *
      * @param string $ticketNumber Ticket number
-     * @param array $data Update data
+     * @param array $data Update data. Recognized keys include departmentId,
+     *   topicId, parentTicketNumber, statusId, slaId, staffId, dueDate,
+     *   note, noteTitle, noteFormat, attachments, and alert (bool, default
+     *   false - when posting a note, whether to trigger osTicket's "New
+     *   Internal Activity Alert" email to the assigned agent/team; osTicket
+     *   core's own Ticket::postNote() defaults this to true, but we default
+     *   to false here to preserve behavior for existing integrations).
      * @param bool $skipPermissionCheck Skip permission check (internal calls only)
      * @return Ticket Updated ticket object
      * @throws Exception If ticket not found or unauthorized
@@ -340,7 +346,13 @@ class ExtendedTicketApiController extends TicketApiController {
                 $noteVars['attachments'] = self::convertDataUriAttachments($data['attachments']);
             }
 
-            if ($ticket->postNote($noteVars, $errors, false, false)) {
+            // Whether to trigger osTicket's "New Internal Activity Alert" email
+            // to the assigned agent/team. Defaults to false to preserve prior
+            // behavior for existing integrations - callers that want the
+            // assigned agent notified must explicitly pass alert:true.
+            $alert = !empty($data['alert']);
+
+            if ($ticket->postNote($noteVars, $errors, false, $alert)) {
                 $updated = true;
             } else {
                 throw new Exception('Failed to post note: ' . implode(', ', $errors), 400);

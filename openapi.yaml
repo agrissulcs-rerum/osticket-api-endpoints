@@ -845,6 +845,17 @@ components:
             type: object
             additionalProperties:
               type: string
+        alert:
+          type: boolean
+          default: false
+          description: |
+            Whether posting this note should trigger osTicket's "New Internal
+            Activity Alert" email to the assigned agent/team (if that alert
+            is enabled in Admin Panel > Settings > Tickets > Alerts and
+            Notices). Defaults to false - notes posted via this API are
+            silent by default. Set true if the note is meant to actively
+            notify whoever the ticket is assigned to (e.g. handing off a
+            fix to a colleague).
 
     # =========================================================================
     # Ticket Response Objects
