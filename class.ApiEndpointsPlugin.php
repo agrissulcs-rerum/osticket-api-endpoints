@@ -69,6 +69,13 @@ class ApiEndpointsPlugin extends Plugin {
         // Register API routes via Signal
         // This works for BOTH Standard API and Wildcard API
         Signal::connect('api', array($this, 'onApiRequest'));
+
+        // Inject "Can Update Tickets" checkbox into the API Key admin form
+        // (Manage > API), and handle saving it when that form is submitted.
+        // Both methods were fully implemented but never actually called
+        // from anywhere - dead code until now.
+        $this->injectAdminUi();
+        $this->handleApiKeyFormSubmission();
     }
 
 
